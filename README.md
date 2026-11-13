@@ -6,8 +6,11 @@ A digital Action Chart for the *Lone Wolf* gamebooks (Kai series, Books 1–5), 
 
 - **Combat Skill** and **Endurance Points**, with crossed-out previous scores as you lose Endurance
 - **Kai Disciplines**: all ten, with the 5 + 1-per-book limit; Weaponskill rolls its weapon from the book's table
-- **Weapons** (2), **Backpack** (8 articles, Meals included), **Meals**, **Belt Pouch** (50 Gold Crowns), **Special Items List** with effects, and notes
-- **Combat Record**: enter the enemy, the Combat Ratio is worked out with Mindblast, Weaponskill, no-weapon and Mindforce modifiers, and each round is resolved on the **Combat Results Table**, with undo
+- **Weapons** (2), **Backpack** (8 articles, Meals included), **Meals**, **Belt Pouch** (50 Gold Crowns), **Special Items List** with effects
+- **Quiver & Arrows**: carry a Quiver and keep count of up to 6 Arrows
+- **Notes**: a note for each book and section, with a list that jumps back to that section, plus general notes
+- **Combat Record**: enter the enemy, the Combat Ratio is worked out with Mindblast, Weaponskill, no-weapon and Mindforce modifiers, and each round is resolved on the **Combat Results Table**, with undo and Evade
+- **Combat Record History**: every finished fight (won, killed, evaded or broken off) with its book, section, enemy, rounds and Endurance lost
 - **Random Number Table**: "close your eyes and point" picks a square, or tap one yourself
 - **Day and Night** colours, switched with one button
 - The chart is saved automatically on the device
