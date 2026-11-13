@@ -132,6 +132,31 @@ button.red{color:var(--red);border-color:var(--red)}
 .log th{font-family:var(--title);font-weight:400;font-size:.78rem;letter-spacing:.06em;color:var(--ink-soft);border-bottom:1px solid var(--ink);text-align:center;padding:2px}
 .log td{font-family:var(--hand);color:var(--pencil);text-align:center;border-bottom:1px dotted var(--faint);padding:1px 2px}
 .log td.l{color:var(--red)}
+.hist{width:100%;min-width:480px;border-collapse:collapse;font-size:.9rem}
+.hist th{font-family:var(--title);font-weight:400;font-size:.76rem;letter-spacing:.06em;color:var(--ink-soft);border-bottom:1px solid var(--ink);padding:2px 4px;text-align:center}
+.hist td{font-family:var(--hand);color:var(--pencil);text-align:center;border-bottom:1px dotted var(--faint);padding:1px 4px}
+.hist td.name{text-align:left}
+.hist td.l,.hist td.lost{color:var(--red)}
+.hist td.won{color:var(--pencil);font-weight:700}
+
+/* section notes */
+.sublab{font-family:var(--title);font-size:.85rem;letter-spacing:.06em;color:var(--ink-soft)}
+textarea.hand.short{min-height:5.25rem}
+.secnotes{display:grid;max-height:240px;overflow:auto}
+.secnotes:empty{display:none}
+.secnote{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:8px;text-align:left;border:0;border-bottom:1px dotted var(--faint);border-radius:0;padding:3px 2px;
+  background:transparent;font-family:var(--hand);font-size:1rem;letter-spacing:0;color:var(--pencil)}
+.secnote b{font-family:var(--title);font-weight:400;font-size:.85rem;color:var(--ink-soft);white-space:nowrap}
+.secnote span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.secnote.cur{background:var(--hl)}
+
+/* quiver */
+.disc.qv{border-bottom:0;justify-self:center}
+.arrows{display:flex;justify-content:center;align-items:end;gap:12px;min-height:56px}
+.arrows svg{width:14px;height:54px;fill:var(--pencil)}
+.arrows svg.off{opacity:.16}
+.arrow-count{text-align:center;font-family:var(--hand);color:var(--pencil)}
+.quiver-off .arrows,.quiver-off .arrow-count{opacity:.45}
 .empty{font-family:var(--fell);font-style:italic;color:var(--ink-soft);text-align:center;font-size:.92rem}
 
 .scroll{overflow-x:auto}
@@ -216,6 +241,15 @@ button.red{color:var(--red);border-color:var(--red)}
           <div class="tools"><button data-step="gold:-10">−10</button><button data-step="gold:10">+10</button></div>
         </div>
       </div>
+
+      <div class="box" id="quiverBox">
+        <div class="cap">Quiver &amp; Arrows<small>Special Item, holds up to 6 Arrows</small></div>
+        <label class="disc qv"><input type="checkbox" id="quiver"><span class="tick"></span><b>Carrying a Quiver</b><small>Worn on the shoulder; it takes no Backpack place.</small></label>
+        <div class="arrows" id="arrows" aria-hidden="true"></div>
+        <div class="arrow-count" id="arrowCount"></div>
+        <div class="tools"><button id="shoot">Fire an Arrow −1</button><button id="addArrow">+ Arrow</button></div>
+        <div class="rule">An Arrow is used up when fired. You need a Bow to fire it.</div>
+      </div>
     </div>
 
     <div class="page">
@@ -237,7 +271,11 @@ button.red{color:var(--red);border-color:var(--red)}
       </div>
       <div class="box">
         <div class="cap">Notes</div>
-        <textarea class="hand" id="notes" aria-label="Notes" placeholder="codes, choices, who waits for you in Holmgard…"></textarea>
+        <label class="sublab" for="secNote" id="secNoteLab">Section</label>
+        <textarea class="hand short" id="secNote" placeholder="what happened in this section…"></textarea>
+        <div class="secnotes" id="secNotes"></div>
+        <label class="sublab" for="notes">General notes</label>
+        <textarea class="hand" id="notes" placeholder="codes, choices, who waits for you in Holmgard…"></textarea>
       </div>
       <div class="confirm" id="newGameBox"></div>
     </div>
@@ -267,8 +305,13 @@ button.red{color:var(--red);border-color:var(--red)}
         <label>Other <input class="hand" type="number" id="mOther" step="1" aria-label="Other modifier"></label>
       </div>
       <div class="verdict" id="result" hidden></div>
-      <div class="tools"><button class="strong" id="fight">Fight a round</button><button id="undo">Undo round</button><button id="clearFoe">New enemy</button></div>
+      <div class="tools"><button class="strong" id="fight">Fight a round</button><button id="undo">Undo round</button><button id="evade">Evade</button><button id="clearFoe">New enemy</button></div>
       <div class="log" id="log"></div>
+      <div class="box">
+        <div class="cap">Combat Record History<small id="histSum"></small></div>
+        <div class="scroll" id="history"></div>
+        <div class="confirm" id="histClearBox"></div>
+      </div>
     </div>
 
     <div class="page">
@@ -347,12 +390,17 @@ function fresh(){
     weapons:["Axe",""],pack:Array(8).fill(""),meals:1,gold:g,
     special:["Map of Sommerlund","","","","","","","","","","",""],specialFx:Array(12).fill(""),
     notes:"Start: CS "+(10+r1)+", EP "+ep+", "+g+" Gold Crowns.",
-    foe:{name:"",cs:"",ep:""},mods:{mind:false,ws:false,now:false,psi:false,other:0},log:[]};
+    foe:{name:"",cs:"",ep:""},mods:{mind:false,ws:false,now:false,psi:false,other:0},log:[],
+    foeDone:false,history:[],quiver:false,arrows:0,secNotes:{}};
 }
 function migrate(s){
   if(!s||s.v!==1)return null;
   if(s.meals==null){const m=x=>/^(meal|obrok)s?$/i.test((x||"").trim());s.meals=s.pack.filter(m).length;s.pack=s.pack.map(x=>m(x)?"":x)}
   if(!s.specialFx)s.specialFx=Array(12).fill("");
+  if(!Array.isArray(s.history))s.history=[];
+  if(s.quiver==null){s.quiver=false;s.arrows=0}
+  if(s.foeDone==null)s.foeDone=false;
+  if(!s.secNotes||typeof s.secNotes!=="object"||Array.isArray(s.secNotes))s.secNotes={};
   return s;
 }
 let S;try{S=migrate(JSON.parse(localStorage.getItem(KEY)||"null"))}catch(e){S=null}
@@ -402,6 +450,22 @@ function render(){
   if(lwDead){res.hidden=false;res.className="verdict lose";res.textContent="Your life and your quest end here."}
   else if(foeDead){res.hidden=false;res.className="verdict";res.textContent=(S.foe.name||"The enemy")+" is defeated"}
   else res.hidden=true;
+  $("evade").disabled=!S.log.length||S.foeDone;
+  const sk=secKey(),hasSec=String(S.section).trim()!=="";
+  $("secNoteLab").textContent=hasSec?"Book "+S.book+", Section "+S.section:"Write a section number above to add a section note";
+  $("secNote").disabled=!hasSec;setVal("secNote",hasSec?(S.secNotes[sk]||""):"");
+  const keys=Object.keys(S.secNotes).sort((a,b)=>{const[x,y]=a.split(":").map(Number),[u,v]=b.split(":").map(Number);return x-u||y-v});
+  $("secNotes").innerHTML=keys.map(k=>{const[b,s]=k.split(":");return `<button class="secnote${k===sk?" cur":""}" data-goto="${esc(k)}" title="Go to Book ${b}, Section ${esc(s)}"><b>${b} · §${esc(s)}</b><span>${esc(S.secNotes[k])}</span></button>`}).join("");
+  $("quiverBox").classList.toggle("quiver-off",!S.quiver);$("quiver").checked=S.quiver;
+  $("arrows").innerHTML=Array.from({length:6},(_,i)=>`<svg viewBox="0 0 12 48" class="${i<S.arrows?"":"off"}"><path d="M6 1 L10 10 L7 9 L7 37 L10 44 L7 42 L6 47 L5 42 L2 44 L5 37 L5 9 L2 10 Z"/></svg>`).join("");
+  $("arrowCount").textContent=S.quiver?S.arrows+" of 6 Arrows":"No Quiver";
+  $("shoot").disabled=!S.quiver||S.arrows<=0;$("addArrow").disabled=!S.quiver||S.arrows>=6;
+  const H=S.history,won=H.filter(h=>h.outcome==="Won").length;
+  $("histSum").textContent=H.length?H.length+" fight"+(H.length===1?"":"s")+", "+won+" won":"";
+  $("history").innerHTML=H.length?`<table class="hist"><thead><tr><th>#</th><th>Book / Section</th><th>Enemy</th><th>CS</th><th>EP</th><th>Rounds</th><th>LW lost</th><th>Result</th></tr></thead><tbody>`+
+    H.map((h,i)=>`<tr><td>${H.length-i}</td><td>${h.book} / ${esc(h.section)}</td><td class="name">${esc(h.name)}</td><td>${esc(h.cs)}</td><td>${esc(h.ep)}</td><td>${h.rounds}</td><td class="l">−${h.lost}</td><td class="${h.outcome==="Won"?"won":h.outcome==="Killed"?"lost":""}">${h.outcome}</td></tr>`).join("")+`</tbody></table>`
+    :`<div class="empty">Finished fights are written here: won, lost, evaded or broken off.</div>`;
+  if(!H.length)$("histClearBox").innerHTML="";else if(!$("histClearBox").children.length)histIdle();
   $("fight").disabled=lwDead||foeDead||noFoe||S.foe.ep==="";$("undo").disabled=!S.log.length;
   $("log").innerHTML=S.log.length?`<table><thead><tr><th>Round</th><th>Number</th><th>Ratio</th><th>Enemy</th><th>Lone Wolf</th></tr></thead><tbody>`+
     S.log.map((l,i)=>`<tr><td>${i+1}</td><td>${l.n}</td><td>${l.ratio>0?"+":""}${l.ratio}</td><td>−${l.e}</td><td class="l">−${l.l}</td></tr>`).reverse().join("")+`</tbody></table>`
@@ -415,6 +479,18 @@ async function push(){if(!ref)return;if(writing){again=true;return}writing=true;
   catch(e){$("status").textContent="Couldn't save to your account; your chart is saved in this browser"}
   writing=false;if(again){again=false;push()}}
 function change(fn){fn();save();render()}
+const secKey=()=>S.book+":"+String(S.section).trim();
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function archive(outcome){
+  if(!S.log.length)return;
+  const e=S.log.reduce((a,x)=>a+x.e,0),l=S.log.reduce((a,x)=>a+x.l,0);
+  S.history.unshift({book:S.book,section:S.section,name:S.foe.name||"Enemy",cs:S.foe.cs,ep:Number(S.foe.ep)+e,rounds:S.log.length,lost:l,outcome});
+  if(S.history.length>300)S.history.length=300;
+}
+function resetFoe(){S.foe={name:"",cs:"",ep:""};S.log=[];S.foeDone=false;S.mods.now=false;S.mods.psi=false;S.mods.other=0}
+function histIdle(){const box=$("histClearBox");box.innerHTML=`<button id="histClear">Clear history</button>`;
+  $("histClear").onclick=()=>{box.innerHTML=`<span>Erase all past fights?</span><button class="red" id="hcYes">Yes, clear</button><button id="hcNo">Cancel</button>`;
+    $("hcYes").onclick=()=>{box.innerHTML="";change(()=>S.history=[])};$("hcNo").onclick=histIdle}}
 
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-step]");if(b){const [k,d]=b.dataset.step.split(":"),n=Number(d);
@@ -443,13 +519,21 @@ $("foeCs").oninput=e=>change(()=>S.foe.cs=e.target.value===""?"":Number(e.target
 $("foeEp").oninput=e=>change(()=>S.foe.ep=e.target.value===""?"":Number(e.target.value));
 [["mMind","mind"],["mWs","ws"],["mNoW","now"],["mPsi","psi"]].forEach(([id,k])=>$(id).onchange=e=>change(()=>S.mods[k]=e.target.checked));
 $("mOther").oninput=e=>change(()=>S.mods.other=Number(e.target.value)||0);
-$("clearFoe").onclick=()=>change(()=>{S.foe={name:"",cs:"",ep:""};S.log=[];S.mods.now=false;S.mods.psi=false;S.mods.other=0});
+$("clearFoe").onclick=()=>change(()=>{if(!S.foeDone)archive("Broken off");resetFoe()});
+$("secNote").oninput=e=>change(()=>{const k=secKey(),v=e.target.value;if(v.trim())S.secNotes[k]=v;else delete S.secNotes[k]});
+document.addEventListener("click",e=>{const g=e.target.closest("[data-goto]");if(!g)return;const i=g.dataset.goto.indexOf(":");
+  change(()=>{S.book=Number(g.dataset.goto.slice(0,i));S.section=g.dataset.goto.slice(i+1)})});
+$("evade").onclick=()=>change(()=>{if(!S.foeDone)archive("Evaded");resetFoe()});
+$("quiver").onchange=e=>change(()=>{S.quiver=e.target.checked;if(!S.quiver)S.arrows=0});
+$("shoot").onclick=()=>change(()=>S.arrows=Math.max(0,S.arrows-1));
+$("addArrow").onclick=()=>change(()=>S.arrows=Math.min(6,S.arrows+1));
 $("rollBtn").onclick=()=>pick();
 $("fight").onclick=()=>change(()=>{
   const n=pick(),r=ratio(),row=n===0?9:n-1,col=colOf(r),[ce,cl]=CRT[row][col];
   const fe=Number(S.foe.ep),e=ce==="K"?fe:Number(ce),l=cl==="K"?S.ep:Number(cl);
-  S.foe.ep=Math.max(0,fe-e);S.ep=Math.max(0,S.ep-l);S.log.push({n,ratio:r,row,col,e,l})});
-$("undo").onclick=()=>change(()=>{const l=S.log.pop();if(!l)return;S.foe.ep=Number(S.foe.ep)+l.e;S.ep=Math.min(S.epMax,S.ep+l.l)});
+  S.foe.ep=Math.max(0,fe-e);S.ep=Math.max(0,S.ep-l);S.log.push({n,ratio:r,row,col,e,l});
+  if(S.foe.ep<=0||S.ep<=0){archive(S.ep<=0?"Killed":"Won");S.foeDone=true}});
+$("undo").onclick=()=>change(()=>{if(S.foeDone){S.history.shift();S.foeDone=false}const l=S.log.pop();if(!l)return;S.foe.ep=Number(S.foe.ep)+l.e;S.ep=Math.min(S.epMax,S.ep+l.l)});
 
 function newGameIdle(){const box=$("newGameBox");box.innerHTML=`<button class="red" id="newGame">New game (erase chart)</button>`;
   $("newGame").onclick=()=>{box.innerHTML=`<span>Erase everything and roll new scores?</span><button class="red" id="ngYes">Yes, new game</button><button id="ngNo">Cancel</button>`;
