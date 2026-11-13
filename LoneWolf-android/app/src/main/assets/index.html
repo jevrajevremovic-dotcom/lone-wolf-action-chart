@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style><title>Lone Wolf Action Chart</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* Layout: the printed Action Chart from the gamebooks. Two facing pages on a desk: the chart (stats, disciplines, gear) and the combat pages (Combat Record, Combat Results Table, Random Number Table). Day = paper and ink; Night = black page with pale ink. Entries are written in pencil. */
+:root{
+  color-scheme:light;
+  --desk:#2A2621; --paper:#F1E8D0; --paper-2:#E9DEC0; --ink:#1B1712; --ink-soft:#5B5246;
+  --pencil:#3B4250; --red:#9A1D1A; --red-on-ink:#F4B7B0; --hl:rgba(154,29,26,.14);
+  --faint:rgba(27,23,18,.3); --faint-2:rgba(27,23,18,.55); --wash:rgba(27,23,18,.07);
+  --sheen:rgba(255,255,255,.35); --shadow:rgba(0,0,0,.45); --foot:#C9BFA8; --placeholder:rgba(59,66,80,.35);
+  --title:"IM Fell English SC", "Palatino Linotype", Georgia, serif;
+  --serif:"EB Garamond", "Palatino Linotype", Georgia, serif;
+  --fell:"IM Fell English", Georgia, serif;
+  --hand:"Kalam", "Segoe Print", "Comic Sans MS", cursive;
+}
+:root.night{
+  color-scheme:dark;
+  --desk:#050505; --paper:#171512; --paper-2:#100F0D; --ink:#E7DDC5; --ink-soft:#A3987F;
+  --pencil:#BAC6DA; --red:#E36A5F; --red-on-ink:#8E1A16; --hl:rgba(227,106,95,.2);
+  --faint:rgba(231,221,197,.22); --faint-2:rgba(231,221,197,.45); --wash:rgba(231,221,197,.08);
+  --sheen:rgba(255,255,255,.03); --shadow:rgba(0,0,0,.8); --foot:#8E8470; --placeholder:rgba(186,198,218,.3);
+}
+body{background:var(--desk);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.4;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 56px;transition:background .3s}
+.wrap{max-width:1200px;margin:0 auto;display:grid;gap:28px}
+.topbar{display:flex;justify-content:flex-end}
+.spread{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0;box-shadow:0 14px 40px var(--shadow)}
+@media (max-width:920px){.spread{grid-template-columns:minmax(0,1fr);gap:16px;box-shadow:none}.page{box-shadow:0 10px 28px var(--shadow)}}
+.page{background:var(--paper);background-image:radial-gradient(ellipse at 50% 40%,var(--sheen),transparent 70%),linear-gradient(var(--paper),var(--paper-2));
+  padding:26px 26px 30px;display:grid;gap:16px;align-content:start;min-width:0}
+.spread .page:first-child{border-right:1px solid var(--faint)}
+@media (max-width:480px){.page{padding:18px 14px 22px}}
+
+h1,h2,h3{margin:0;font-weight:400;text-wrap:balance}
+.masthead{text-align:center;display:grid;gap:2px;border-bottom:3px double var(--ink);padding-bottom:10px}
+.masthead .series{font-family:var(--title);letter-spacing:.3em;font-size:.85rem;color:var(--ink-soft)}
+.masthead h1,.masthead h2{font-family:var(--title);font-size:clamp(2rem,5vw,2.8rem);letter-spacing:.06em;line-height:1}
+.masthead h2{font-size:2rem}
+.masthead .book{font-family:var(--fell);font-style:italic;color:var(--ink-soft)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;align-items:baseline;font-family:var(--title);font-size:.9rem}
+.meta select{font-family:var(--fell);font-size:1rem;background:transparent;border:0;border-bottom:1px dotted var(--ink);color:var(--ink);padding:2px 4px;max-width:100%}
+.meta select option,.ws select option{background:var(--paper);color:var(--ink)}
+#section{width:4.5em;text-align:center}
+
+.box{border:3px double var(--ink);padding:10px 12px 12px;display:grid;gap:8px;min-width:0;position:relative}
+.box>.cap{font-family:var(--title);font-size:1.02rem;letter-spacing:.08em;text-align:center;line-height:1.15}
+.box>.cap small{display:block;font-family:var(--fell);font-style:italic;letter-spacing:0;font-size:.82rem;color:var(--ink-soft)}
+.rule{font-family:var(--fell);font-style:italic;font-size:.82rem;color:var(--ink-soft);text-align:center;line-height:1.3}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media (max-width:480px){.two{grid-template-columns:minmax(0,1fr)}}
+
+.hand,input.hand,textarea.hand{font-family:var(--hand);color:var(--pencil)}
+input.hand,textarea.hand{background:transparent;border:0;border-bottom:1px dotted var(--faint-2);border-radius:0;font-size:1.12rem;padding:1px 4px;width:100%;box-sizing:border-box;min-width:0}
+input.hand::placeholder,textarea.hand::placeholder{color:var(--placeholder)}
+textarea.hand{resize:vertical;min-height:150px;line-height:1.75rem;border:0;
+  background-image:repeating-linear-gradient(transparent 0 calc(1.75rem - 1px),var(--faint) calc(1.75rem - 1px) 1.75rem);background-attachment:local}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+
+button{font:inherit;cursor:pointer;background:transparent;color:var(--ink);border:1px solid var(--ink);border-radius:2px;padding:3px 10px;font-family:var(--title);font-size:.85rem;letter-spacing:.05em}
+button:hover{background:var(--wash)}
+button:disabled{opacity:.35;cursor:not-allowed}
+button.strong{background:var(--ink);color:var(--paper)}
+button.strong:hover{background:var(--ink-soft)}
+button.red{color:var(--red);border-color:var(--red)}
+.theme-btn{color:var(--foot);border-color:var(--foot);display:flex;gap:8px;align-items:center}
+.theme-btn:hover{background:rgba(255,255,255,.06)}
+.tools{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.step{min-width:30px;padding:2px 6px;font-family:var(--serif);font-size:1rem}
+
+.score{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.score .val{font-family:var(--hand);font-weight:700;font-size:2.6rem;line-height:1;color:var(--pencil);min-width:2.2ch;text-align:center}
+.score .of{font-family:var(--fell);font-style:italic;color:var(--ink-soft)}
+.score input{width:2.8em;text-align:center}
+.tally{display:flex;flex-wrap:wrap;gap:2px 6px;justify-content:center;font-family:var(--hand);color:var(--ink-soft);font-size:.95rem;min-height:1.3em}
+.tally s{color:var(--placeholder)}
+.dead .val{color:var(--red)}
+
+.discs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px 16px}
+.disc{display:grid;grid-template-columns:22px 1fr;gap:0 8px;align-items:start;cursor:pointer;padding:3px 0;border-bottom:1px dotted var(--faint)}
+.disc input{position:absolute;opacity:0;pointer-events:none}
+.tick{width:18px;height:18px;border:1.5px solid var(--ink);margin-top:3px;display:grid;place-items:center;font-family:var(--hand);font-weight:700;color:var(--pencil);font-size:1.15rem;line-height:1}
+.disc input:checked+.tick::after{content:"✓"}
+.disc input:focus-visible+.tick{outline:2px solid var(--red);outline-offset:2px}
+.disc b{font-family:var(--title);font-weight:400;letter-spacing:.04em}
+.disc small{grid-column:2;font-family:var(--fell);font-style:italic;color:var(--ink-soft);font-size:.83rem;line-height:1.25}
+.disc.on b{text-decoration:underline;text-decoration-style:wavy;text-decoration-color:var(--faint-2);text-underline-offset:3px}
+.count{font-family:var(--hand);color:var(--pencil);text-align:center}
+.count.over{color:var(--red)}
+.ws{display:flex;gap:8px;align-items:baseline;justify-content:center;flex-wrap:wrap;font-family:var(--fell);font-style:italic}
+.ws select{font-family:var(--hand);color:var(--pencil);font-size:1.05rem;background:transparent;border:0;border-bottom:1px dotted var(--ink)}
+
+.lines{display:grid;gap:2px}
+.line{display:grid;grid-template-columns:1.6em minmax(0,1fr);align-items:baseline;gap:4px}
+.line i{font-style:normal;font-family:var(--fell);color:var(--ink-soft);text-align:right;font-variant-numeric:tabular-nums}
+.line.fx{grid-template-columns:1.6em minmax(0,1.2fr) minmax(0,1fr)}
+.colhead{display:grid;grid-template-columns:1.6em minmax(0,1.2fr) minmax(0,1fr);gap:4px;font-family:var(--title);font-size:.8rem;letter-spacing:.06em;color:var(--ink-soft)}
+.meal{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.meal .val{font-family:var(--hand);font-weight:700;font-size:1.8rem;color:var(--pencil);min-width:1.5ch;text-align:center}
+.packcount{text-align:center;font-family:var(--hand);color:var(--pencil);font-size:.95rem}
+.packcount.over{color:var(--red)}
+
+.record{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch}
+@media (max-width:480px){.record{grid-template-columns:minmax(0,1fr)}}
+.side{border:1.5px solid var(--ink);padding:8px;display:grid;gap:4px;text-align:center;align-content:start}
+.side .who{font-family:var(--title);letter-spacing:.08em}
+.side .lab{font-family:var(--fell);font-style:italic;font-size:.82rem;color:var(--ink-soft)}
+.side .v{font-family:var(--hand);font-weight:700;font-size:1.8rem;color:var(--pencil);line-height:1.1}
+.side input.hand{text-align:center;font-weight:700;font-size:1.5rem}
+.side input.hand.who{font-size:1.1rem}
+.ratiobox{border:3px double var(--ink);display:grid;place-content:center;text-align:center;padding:8px 14px;gap:2px}
+.ratiobox .lab{font-family:var(--title);font-size:.8rem;letter-spacing:.08em}
+.ratiobox .v{font-family:var(--hand);font-weight:700;font-size:2.4rem;color:var(--red);line-height:1}
+.mods{display:flex;flex-wrap:wrap;gap:4px 16px;justify-content:center;font-family:var(--fell);font-size:.92rem}
+.mods label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.mods input[type=checkbox]{accent-color:var(--ink)}
+.mods input.hand{width:3em;text-align:center}
+.verdict{text-align:center;font-family:var(--title);font-size:1.15rem;letter-spacing:.06em;padding:6px;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+.verdict.lose{color:var(--red)}
+.log{max-height:210px;overflow:auto}
+.log table{width:100%;border-collapse:collapse;font-size:.92rem}
+.log th{font-family:var(--title);font-weight:400;font-size:.78rem;letter-spacing:.06em;color:var(--ink-soft);border-bottom:1px solid var(--ink);text-align:center;padding:2px}
+.log td{font-family:var(--hand);color:var(--pencil);text-align:center;border-bottom:1px dotted var(--faint);padding:1px 2px}
+.log td.l{color:var(--red)}
+.empty{font-family:var(--fell);font-style:italic;color:var(--ink-soft);text-align:center;font-size:.92rem}
+
+.scroll{overflow-x:auto}
+.crt{border-collapse:collapse;font-family:var(--serif);font-size:.8rem;width:100%;min-width:620px;font-variant-numeric:tabular-nums}
+.crt th,.crt td{border:1px solid var(--ink);padding:2px 3px;text-align:center;white-space:nowrap}
+.crt thead th{font-family:var(--title);font-weight:400;font-size:.76rem}
+.crt tbody th{font-family:var(--title);font-weight:400;width:2em}
+.crt td{line-height:1.15}
+.crt td .e{display:block}
+.crt td .l{display:block;color:var(--red)}
+.crt .col-on{background:var(--hl)}
+.crt td.hit{background:var(--ink);color:var(--paper)}
+.crt td.hit .l{color:var(--red-on-ink)}
+.crt caption{caption-side:bottom;font-family:var(--fell);font-style:italic;color:var(--ink-soft);font-size:.8rem;padding-top:6px;text-align:left}
+.crt .corner{font-family:var(--fell);font-style:italic;font-size:.7rem}
+
+.rnt-wrap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center}
+@media (max-width:480px){.rnt-wrap{grid-template-columns:minmax(0,1fr);justify-items:center}}
+.rnt{display:grid;grid-template-columns:repeat(10,1.9em);border:2px solid var(--ink);font-family:var(--serif);font-size:1rem}
+.rnt span{display:grid;place-items:center;height:1.9em;border-right:1px solid var(--faint);border-bottom:1px solid var(--faint);position:relative;cursor:pointer;user-select:none}
+.rnt span:hover{background:var(--wash)}
+.rnt span.dot::after{content:"";position:absolute;inset:3px;border:2px solid var(--pencil);border-radius:50%;transform:rotate(-12deg)}
+.picked{display:grid;gap:6px;justify-items:center;text-align:center}
+.picked .v{font-family:var(--hand);font-weight:700;font-size:3rem;line-height:1;color:var(--pencil);min-height:1em}
+.picked .v.pop{animation:pop .3s ease}
+@keyframes pop{from{transform:scale(.7) rotate(-10deg)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.picked .v.pop{animation:none}body{transition:none}}
+
+.foot{color:var(--foot);font-family:var(--fell);font-style:italic;font-size:.88rem;text-align:center;display:grid;gap:4px}
+.confirm{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap;font-family:var(--fell);font-style:italic}
+</style>
+
+<div class="wrap">
+  <div class="topbar"><button class="theme-btn" id="themeBtn" aria-pressed="false">☾ Night</button></div>
+
+  <div class="spread">
+    <div class="page">
+      <div class="masthead">
+        <div class="series">LONE WOLF</div>
+        <h1>Action Chart</h1>
+        <div class="book" id="bookName"></div>
+      </div>
+      <div class="meta">
+        <label for="book">Book</label><select id="book"></select>
+        <label for="section">Section</label><input class="hand" type="number" id="section" min="1" max="400" inputmode="numeric">
+      </div>
+
+      <div class="two">
+        <div class="box" id="csBox">
+          <div class="cap">Combat Skill</div>
+          <div class="score"><button class="step" data-step="cs:-1" aria-label="Decrease Combat Skill">−</button><span class="val" id="csVal">0</span><button class="step" data-step="cs:1" aria-label="Increase Combat Skill">+</button></div>
+          <div class="rule">Starting score: 10 + a number from the Random Number Table</div>
+        </div>
+        <div class="box" id="epBox">
+          <div class="cap">Endurance Points</div>
+          <div class="score"><button class="step" data-step="ep:-1" aria-label="Decrease Endurance">−</button><span class="val" id="epVal">0</span>
+            <span class="of">of</span><input class="hand" type="number" id="epMax" min="1" aria-label="Initial Endurance"><button class="step" data-step="ep:1" aria-label="Increase Endurance">+</button></div>
+          <div class="tally" id="tally" aria-hidden="true"></div>
+          <div class="rule">Can never go above the initial score. 0 = dead.</div>
+          <div class="tools"><button id="healBtn">Healing +1</button></div>
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="cap">Kai Disciplines<small id="discCount" class="count"></small></div>
+        <div class="discs" id="discs"></div>
+        <div class="ws" id="wsBox" hidden>
+          <label for="wsWeapon">Weaponskill in:</label><select id="wsWeapon"></select>
+          <button id="wsRoll">Pick weapon at random</button>
+        </div>
+      </div>
+
+      <div class="two">
+        <div class="box">
+          <div class="cap">Weapons<small>maximum 2 weapons</small></div>
+          <div class="lines" id="weapons"></div>
+          <div class="rule">With Weaponskill in that weapon: +2 CS. Entering combat with no weapon: −4 CS.</div>
+        </div>
+        <div class="box">
+          <div class="cap">Belt Pouch<small>Gold Crowns, 50 maximum</small></div>
+          <div class="score"><button class="step" data-step="gold:-1" aria-label="Remove one Gold Crown">−</button><span class="val" id="goldVal">0</span><button class="step" data-step="gold:1" aria-label="Add one Gold Crown">+</button></div>
+          <div class="tools"><button data-step="gold:-10">−10</button><button data-step="gold:10">+10</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="box">
+        <div class="cap">Backpack<small>maximum 8 articles, Meals included</small></div>
+        <div class="lines" id="pack"></div>
+        <div class="packcount" id="packCount"></div>
+      </div>
+      <div class="box">
+        <div class="cap">Meals</div>
+        <div class="meal"><button id="eatMeal">Eat</button><span class="val" id="mealVal">0</span><button id="addMeal">+ Meal</button></div>
+        <div class="rule">If you must eat and have no Meal, lose 3 Endurance Points. Hunting lets you forage in the wild instead.</div>
+        <div class="tools"><button class="red" id="noMeal">No Meal −3 EP</button></div>
+      </div>
+      <div class="box">
+        <div class="cap">Special Items List</div>
+        <div class="colhead" aria-hidden="true"><span></span><span>Description</span><span>Effect</span></div>
+        <div class="lines" id="special"></div>
+      </div>
+      <div class="box">
+        <div class="cap">Notes</div>
+        <textarea class="hand" id="notes" aria-label="Notes" placeholder="codes, choices, who waits for you in Holmgard…"></textarea>
+      </div>
+      <div class="confirm" id="newGameBox"></div>
+    </div>
+  </div>
+
+  <div class="spread">
+    <div class="page">
+      <div class="masthead"><div class="series">LONE WOLF</div><h2>Combat Record</h2></div>
+      <div class="record">
+        <div class="side">
+          <div class="who">Lone Wolf</div>
+          <div class="lab">Combat Skill</div><div class="v" id="vsLw">0</div>
+          <div class="lab">Endurance Points</div><div class="v" id="vsLwEp">0</div>
+        </div>
+        <div class="ratiobox"><span class="lab">Combat<br>Ratio</span><span class="v" id="ratio">–</span></div>
+        <div class="side">
+          <input class="hand who" type="text" id="foeName" placeholder="Enemy" aria-label="Enemy name">
+          <label class="lab" for="foeCs">Combat Skill</label><input class="hand" type="number" id="foeCs" min="0" inputmode="numeric">
+          <label class="lab" for="foeEp">Endurance Points</label><input class="hand" type="number" id="foeEp" min="0" inputmode="numeric">
+        </div>
+      </div>
+      <div class="mods">
+        <label><input type="checkbox" id="mMind"> Mindblast +2</label>
+        <label><input type="checkbox" id="mWs"> Weaponskill +2</label>
+        <label><input type="checkbox" id="mNoW"> No weapon −4</label>
+        <label><input type="checkbox" id="mPsi"> Mindforce attack −2</label>
+        <label>Other <input class="hand" type="number" id="mOther" step="1" aria-label="Other modifier"></label>
+      </div>
+      <div class="verdict" id="result" hidden></div>
+      <div class="tools"><button class="strong" id="fight">Fight a round</button><button id="undo">Undo round</button><button id="clearFoe">New enemy</button></div>
+      <div class="log" id="log"></div>
+    </div>
+
+    <div class="page">
+      <div class="box">
+        <div class="cap">Combat Results Table</div>
+        <div class="scroll"><table class="crt" id="crt"></table></div>
+      </div>
+      <div class="box">
+        <div class="cap">Random Number Table</div>
+        <div class="rnt-wrap">
+          <div class="rnt" id="rnt" role="grid" aria-label="Random Number Table"></div>
+          <div class="picked">
+            <div class="v" id="die">–</div>
+            <button class="strong" id="rollBtn">Close your eyes and point</button>
+            <div class="rule">Like the pencil on the printed table. You can also click any square.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><span id="status">Your chart is saved on this phone</span><span>Kai series rules, Books 1–5</span></div>
+</div>
+
+<script>
+(function(){
+/* ---------- theme (per-viewer preference) ---------- */
+const TKEY="lw-action-chart-theme";
+function hostDark(){const t=document.documentElement.dataset.theme;if(t)return t==="dark";return matchMedia("(prefers-color-scheme: dark)").matches}
+let night;try{const t=localStorage.getItem(TKEY);night=t?t==="night":hostDark()}catch(e){night=hostDark()}
+function applyTheme(){document.documentElement.classList.toggle("night",night);const b=document.getElementById("themeBtn");
+  b.textContent=night?"☀ Day":"☾ Night";b.setAttribute("aria-pressed",String(night));b.setAttribute("aria-label",night?"Switch to day colours":"Switch to night colours")}
+applyTheme();
+document.getElementById("themeBtn").onclick=()=>{night=!night;try{localStorage.setItem(TKEY,night?"night":"day")}catch(e){}applyTheme()};
+
+const BOOKS=["Flight from the Dark","Fire on the Water","The Caverns of Kalte","The Chasm of Doom","Shadow on the Sand"];
+const DISC=[
+ ["camouflage","Camouflage","Blend into your surroundings, in the wild or in town."],
+ ["hunting","Hunting","Find food in the wild; no Meal needed there."],
+ ["sixth","Sixth Sense","Sense hidden danger and others' intentions."],
+ ["tracking","Tracking","Find the right path and read tracks."],
+ ["healing","Healing","+1 EP for each section without combat."],
+ ["weaponskill","Weaponskill","+2 CS with one chosen weapon."],
+ ["mindshield","Mindshield","Protection against Mindforce attacks."],
+ ["mindblast","Mindblast","+2 CS, unless the enemy is immune."],
+ ["animal","Animal Kinship","Understand animals and guess their actions."],
+ ["mom","Mind Over Matter","Move small objects with your mind."]
+];
+const WS=["Dagger","Spear","Mace","Short Sword","Warhammer","Sword","Axe","Sword","Quarterstaff","Broadsword"];
+const COLS=["−11 or less","−10 −9","−8 −7","−6 −5","−4 −3","−2 −1","0","+1 +2","+3 +4","+5 +6","+7 +8","+9 +10","+11 or more"];
+const CRT=[
+ "0/K 0/K 0/8 0/6 1/6 2/5 3/5 4/5 5/4 6/4 7/4 8/3 9/3",
+ "0/K 0/8 0/7 1/6 2/5 3/5 4/4 5/4 6/3 7/3 8/3 9/3 10/2",
+ "0/8 0/7 1/6 2/5 3/5 4/4 5/4 6/3 7/3 8/3 9/2 10/2 11/2",
+ "0/8 1/7 2/6 3/5 4/4 5/4 6/3 7/3 8/2 9/2 10/2 11/2 12/2",
+ "1/7 2/6 3/5 4/4 5/4 6/3 7/2 8/2 9/2 10/2 11/2 12/2 14/1",
+ "2/6 3/6 4/5 5/4 6/3 7/2 8/2 9/2 10/2 11/1 12/1 14/1 16/1",
+ "3/5 4/5 5/4 6/3 7/2 8/2 9/1 10/1 11/1 12/0 14/0 16/0 18/0",
+ "4/4 5/4 6/3 7/2 8/1 9/1 10/0 11/0 12/0 14/0 16/0 18/0 K/0",
+ "5/3 6/3 7/2 8/0 9/0 10/0 11/0 12/0 14/0 16/0 18/0 K/0 K/0",
+ "6/0 7/0 8/0 9/0 10/0 11/0 12/0 14/0 16/0 18/0 K/0 K/0 K/0"
+].map(r=>r.split(" ").map(c=>c.split("/")));
+const KEY="lw-action-chart-v1";
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+let seed=1984;const sr=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed};
+const RNT=Array.from({length:100},()=>Math.floor(sr()/0x7fffffff*10)%10);
+function pick(cell){const i=cell==null?Math.floor(Math.random()*100):cell;
+  document.querySelectorAll("#rnt span").forEach((s,k)=>s.classList.toggle("dot",k===i));
+  const d=$("die");d.textContent=RNT[i];d.classList.remove("pop");void d.offsetWidth;d.classList.add("pop");return RNT[i]}
+
+function fresh(){
+  const r1=Math.floor(Math.random()*10),r2=Math.floor(Math.random()*10),g=Math.floor(Math.random()*10),ep=20+r2;
+  return {v:1,updated:Date.now(),book:1,section:"1",cs:10+r1,ep,epMax:ep,discs:[],wsWeapon:"",
+    weapons:["Axe",""],pack:Array(8).fill(""),meals:1,gold:g,
+    special:["Map of Sommerlund","","","","","","","","","","",""],specialFx:Array(12).fill(""),
+    notes:"Start: CS "+(10+r1)+", EP "+ep+", "+g+" Gold Crowns.",
+    foe:{name:"",cs:"",ep:""},mods:{mind:false,ws:false,now:false,psi:false,other:0},log:[]};
+}
+function migrate(s){
+  if(!s||s.v!==1)return null;
+  if(s.meals==null){const m=x=>/^(meal|obrok)s?$/i.test((x||"").trim());s.meals=s.pack.filter(m).length;s.pack=s.pack.map(x=>m(x)?"":x)}
+  if(!s.specialFx)s.specialFx=Array(12).fill("");
+  return s;
+}
+let S;try{S=migrate(JSON.parse(localStorage.getItem(KEY)||"null"))}catch(e){S=null}
+if(!S)S=fresh();
+
+$("book").innerHTML=BOOKS.map((b,i)=>`<option value="${i+1}">${i+1}. ${b}</option>`).join("");
+$("discs").innerHTML=DISC.map(([id,n,d])=>`<label class="disc" id="d_${id}"><input type="checkbox" data-disc="${id}"><span class="tick"></span><b>${n}</b><small>${d}</small></label>`).join("");
+$("wsWeapon").innerHTML=`<option value="">—</option>`+[...new Set(WS)].map(w=>`<option>${w}</option>`).join("");
+function lines(el,n,key,fx,label){el.innerHTML=Array.from({length:n},(_,i)=>`<div class="line${fx?" fx":""}"><i>${i+1}</i><input class="hand" type="text" id="${key}${i}" data-list="${key}" data-i="${i}" aria-label="${label} ${i+1}">${fx?`<input class="hand" type="text" id="${fx}${i}" data-list="${fx}" data-i="${i}" aria-label="Effect ${i+1}">`:""}</div>`).join("")}
+lines($("weapons"),2,"weapons",null,"Weapon");lines($("pack"),8,"pack",null,"Backpack item");lines($("special"),12,"special","specialFx","Special item");
+$("crt").innerHTML=`<thead><tr><th class="corner">Random<br>Number</th>${COLS.map((c,i)=>`<th data-col="${i}">${c}</th>`).join("")}</tr></thead><tbody>`+
+  CRT.map((row,ri)=>`<tr><th>${ri===9?0:ri+1}</th>${row.map((c,ci)=>`<td data-r="${ri}" data-c="${ci}"><span class="e">${c[0]}</span><span class="l">${c[1]}</span></td>`).join("")}</tr>`).join("")+
+  `</tbody><caption>Top figure: enemy loss (E). Bottom, in red: Lone Wolf's loss (LW). K = automatically killed. The column is the Combat Ratio.</caption>`;
+$("rnt").innerHTML=RNT.map((n,i)=>`<span data-cell="${i}" role="gridcell">${n}</span>`).join("");
+
+const has=id=>S.discs.includes(id);
+const allowed=()=>4+Number(S.book);
+const packUsed=()=>S.pack.filter(x=>x.trim()).length+S.meals;
+function lwCs(){const m=S.mods;return S.cs+(m.mind?2:0)+(m.ws?2:0)-(m.now?4:0)-(m.psi?2:0)+(Number(m.other)||0)}
+const ratio=()=>lwCs()-(Number(S.foe.cs)||0);
+function colOf(r){if(r<=-11)return 0;if(r>=11)return 12;return 6+Math.sign(r)*Math.ceil(Math.abs(r)/2)}
+
+function setVal(id,v){const el=$(id);if(el&&document.activeElement!==el&&el.value!==String(v??""))el.value=v??""}
+function render(){
+  setVal("book",S.book);$("bookName").textContent="Book "+S.book+": "+BOOKS[S.book-1];setVal("section",S.section);
+  $("csVal").textContent=S.cs;$("epVal").textContent=S.ep;setVal("epMax",S.epMax);
+  $("epBox").classList.toggle("dead",S.ep<=0);
+  const lost=S.epMax-S.ep;$("tally").innerHTML=lost>0?Array.from({length:Math.min(lost,6)},(_,i)=>`<s>${S.epMax-i}</s>`).join("")+(lost>6?"<span>…</span>":""):"";
+  $("healBtn").hidden=!has("healing");$("goldVal").textContent=S.gold;$("mealVal").textContent=S.meals;
+  DISC.forEach(([id])=>{const on=has(id);$("d_"+id).classList.toggle("on",on);$("d_"+id).querySelector("input").checked=on});
+  const c=$("discCount");c.textContent=S.discs.length+" of "+allowed()+" (5 to start, +1 per book completed)";c.classList.toggle("over",S.discs.length>allowed());
+  $("wsBox").hidden=!has("weaponskill");setVal("wsWeapon",S.wsWeapon);
+  ["weapons","pack","special","specialFx"].forEach(k=>S[k].forEach((v,i)=>setVal(k+i,v)));
+  const u=packUsed(),pc=$("packCount");pc.textContent=u+" of 8 places used ("+S.meals+" Meal"+(S.meals===1?"":"s")+")";pc.classList.toggle("over",u>8);
+  $("addMeal").disabled=u>=8;$("eatMeal").disabled=S.meals<=0;
+  setVal("notes",S.notes);
+  setVal("foeName",S.foe.name);setVal("foeCs",S.foe.cs);setVal("foeEp",S.foe.ep);
+  $("mMind").checked=S.mods.mind;$("mWs").checked=S.mods.ws;$("mNoW").checked=S.mods.now;$("mPsi").checked=S.mods.psi;setVal("mOther",S.mods.other||"");
+  $("mMind").parentElement.hidden=!has("mindblast");$("mWs").parentElement.hidden=!has("weaponskill");$("mPsi").parentElement.hidden=has("mindshield");
+  const r=ratio(),noFoe=S.foe.cs==="";
+  $("vsLw").textContent=lwCs();$("vsLwEp").textContent=S.ep;$("ratio").textContent=noFoe?"–":(r>0?"+":"")+r;
+  const col=colOf(r),last=S.log[S.log.length-1];
+  document.querySelectorAll("#crt [data-c],#crt th[data-col]").forEach(td=>{
+    const ci=Number(td.dataset.c??td.dataset.col);td.classList.toggle("col-on",!noFoe&&ci===col);
+    td.classList.toggle("hit",!!last&&td.dataset.r!==undefined&&Number(td.dataset.r)===last.row&&ci===last.col)});
+  const res=$("result"),foeDead=S.foe.ep!==""&&Number(S.foe.ep)<=0,lwDead=S.ep<=0;
+  if(lwDead){res.hidden=false;res.className="verdict lose";res.textContent="Your life and your quest end here."}
+  else if(foeDead){res.hidden=false;res.className="verdict";res.textContent=(S.foe.name||"The enemy")+" is defeated"}
+  else res.hidden=true;
+  $("fight").disabled=lwDead||foeDead||noFoe||S.foe.ep==="";$("undo").disabled=!S.log.length;
+  $("log").innerHTML=S.log.length?`<table><thead><tr><th>Round</th><th>Number</th><th>Ratio</th><th>Enemy</th><th>Lone Wolf</th></tr></thead><tbody>`+
+    S.log.map((l,i)=>`<tr><td>${i+1}</td><td>${l.n}</td><td>${l.ratio>0?"+":""}${l.ratio}</td><td>−${l.e}</td><td class="l">−${l.l}</td></tr>`).reverse().join("")+`</tbody></table>`
+    :`<div class="empty">Write in the enemy's Combat Skill and Endurance Points, then fight a round.</div>`;
+}
+
+let ref=null,saveT=null,writing=false,again=false;
+function save(){S.updated=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}clearTimeout(saveT);saveT=setTimeout(push,700)}
+async function push(){if(!ref)return;if(writing){again=true;return}writing=true;
+  try{await ref.set({sheet:JSON.parse(JSON.stringify(S)),updated:S.updated});$("status").textContent="Your chart is saved to your account"}
+  catch(e){$("status").textContent="Couldn't save to your account; your chart is saved in this browser"}
+  writing=false;if(again){again=false;push()}}
+function change(fn){fn();save();render()}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-step]");if(b){const [k,d]=b.dataset.step.split(":"),n=Number(d);
+    change(()=>{if(k==="cs")S.cs=clamp(S.cs+n,0,99);if(k==="ep")S.ep=clamp(S.ep+n,0,S.epMax);if(k==="gold")S.gold=clamp(S.gold+n,0,50)});return}
+  const cell=e.target.closest("[data-cell]");if(cell)pick(Number(cell.dataset.cell));
+});
+$("book").onchange=e=>change(()=>S.book=Number(e.target.value));
+$("section").oninput=e=>change(()=>S.section=e.target.value);
+$("epMax").onchange=e=>change(()=>{S.epMax=Math.max(1,Number(e.target.value)||1);S.ep=Math.min(S.ep,S.epMax)});
+$("healBtn").onclick=()=>change(()=>S.ep=Math.min(S.epMax,S.ep+1));
+$("discs").addEventListener("change",e=>{const id=e.target.dataset.disc;if(!id)return;
+  change(()=>{S.discs=e.target.checked?[...S.discs,id]:S.discs.filter(x=>x!==id);
+    if(id==="mindblast")S.mods.mind=e.target.checked;
+    if(id==="weaponskill"&&e.target.checked&&!S.wsWeapon)S.wsWeapon=WS[pick()];
+    if(id==="weaponskill"&&!e.target.checked)S.mods.ws=false;
+    if(id==="mindshield"&&e.target.checked)S.mods.psi=false})});
+$("wsWeapon").onchange=e=>change(()=>S.wsWeapon=e.target.value);
+$("wsRoll").onclick=()=>change(()=>S.wsWeapon=WS[pick()]);
+document.addEventListener("input",e=>{const k=e.target.dataset.list;if(!k)return;S[k][Number(e.target.dataset.i)]=e.target.value;save();if(k==="pack")render()});
+$("addMeal").onclick=()=>change(()=>{if(packUsed()<8)S.meals++});
+$("eatMeal").onclick=()=>change(()=>S.meals=Math.max(0,S.meals-1));
+$("noMeal").onclick=()=>change(()=>S.ep=Math.max(0,S.ep-3));
+$("notes").oninput=e=>{S.notes=e.target.value;save()};
+$("foeName").oninput=e=>change(()=>S.foe.name=e.target.value);
+$("foeCs").oninput=e=>change(()=>S.foe.cs=e.target.value===""?"":Number(e.target.value));
+$("foeEp").oninput=e=>change(()=>S.foe.ep=e.target.value===""?"":Number(e.target.value));
+[["mMind","mind"],["mWs","ws"],["mNoW","now"],["mPsi","psi"]].forEach(([id,k])=>$(id).onchange=e=>change(()=>S.mods[k]=e.target.checked));
+$("mOther").oninput=e=>change(()=>S.mods.other=Number(e.target.value)||0);
+$("clearFoe").onclick=()=>change(()=>{S.foe={name:"",cs:"",ep:""};S.log=[];S.mods.now=false;S.mods.psi=false;S.mods.other=0});
+$("rollBtn").onclick=()=>pick();
+$("fight").onclick=()=>change(()=>{
+  const n=pick(),r=ratio(),row=n===0?9:n-1,col=colOf(r),[ce,cl]=CRT[row][col];
+  const fe=Number(S.foe.ep),e=ce==="K"?fe:Number(ce),l=cl==="K"?S.ep:Number(cl);
+  S.foe.ep=Math.max(0,fe-e);S.ep=Math.max(0,S.ep-l);S.log.push({n,ratio:r,row,col,e,l})});
+$("undo").onclick=()=>change(()=>{const l=S.log.pop();if(!l)return;S.foe.ep=Number(S.foe.ep)+l.e;S.ep=Math.min(S.epMax,S.ep+l.l)});
+
+function newGameIdle(){const box=$("newGameBox");box.innerHTML=`<button class="red" id="newGame">New game (erase chart)</button>`;
+  $("newGame").onclick=()=>{box.innerHTML=`<span>Erase everything and roll new scores?</span><button class="red" id="ngYes">Yes, new game</button><button id="ngNo">Cancel</button>`;
+    $("ngYes").onclick=()=>{S=fresh();save();render();newGameIdle()};$("ngNo").onclick=newGameIdle}}
+newGameIdle();
+render();
+
+(async()=>{
+  const c=window.claude;if(!c||!c.use)return;
+  const [db,user]=await Promise.all([c.use("db"),c.use("user")]);if(!db||!user)return;
+  const uid=await user.id();if(!uid)return;
+  ref=db.doc("data/users/"+uid+"/sheet");
+  $("status").textContent="Connecting to your account…";
+  const t=setTimeout(()=>$("status").textContent="Your account can't be reached right now; your chart is saved in this browser",10000);
+  let first=true;
+  ref.onSnapshot(s=>{
+    if(s.metadata.hasPendingWrites)return;
+    if(!s.metadata.fromCache)clearTimeout(t);
+    const d=s.exists?s.data():null;
+    if(d&&d.sheet&&(d.updated||0)>(S.updated||0)){
+      const m=migrate(JSON.parse(JSON.stringify(d.sheet)));
+      if(m){S=m;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render();$("status").textContent="Your chart is saved to your account"}
+    }else if(first&&!s.metadata.fromCache){
+      if(!d||(d.updated||0)<(S.updated||0))setTimeout(push,0);else $("status").textContent="Your chart is saved to your account";
+    }
+    if(!s.metadata.fromCache)first=false;
+  },()=>{clearTimeout(t);$("status").textContent="Your account isn't available; your chart is saved in this browser"});
+})();
+})();
+</script>
+
+</html>

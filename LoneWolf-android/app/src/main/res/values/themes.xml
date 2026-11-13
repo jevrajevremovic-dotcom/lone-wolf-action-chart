@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light parent so the page's prefers-color-scheme follows the phone; values-night overrides it. -->
+    <style name="Theme.LoneWolf" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/desk</item>
+        <item name="android:statusBarColor">@color/desk</item>
+        <item name="android:navigationBarColor">@color/desk</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+    <color name="desk">#2A2621</color>
+    <color name="paper">#F1E8D0</color>
+    <color name="ink">#1B1712</color>
+    <color name="red">#9A1D1A</color>
+</resources>
